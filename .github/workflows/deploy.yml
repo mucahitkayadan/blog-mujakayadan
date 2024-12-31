@@ -31,7 +31,7 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
         
     - name: Deploy to S3
-      run: aws s3 sync dist/ s3://blog.mujakayadan.com --delete 
+      run: aws s3 sync out/ s3://blog.mujakayadan.com --delete 
         
     - name: Invalidate CloudFront
       run: |
