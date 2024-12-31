@@ -3,7 +3,7 @@ name: Deploy Blog
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
@@ -31,7 +31,7 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
         
     - name: Deploy to S3
-      run: aws s3 sync out/ s3://blog.mujakayadan.com --delete
+      run: aws s3 sync .next/out/ s3://blog.mujakayadan.com --delete  # Updated path
         
     - name: Invalidate CloudFront
       run: |
