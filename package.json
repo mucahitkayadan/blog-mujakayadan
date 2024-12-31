@@ -9,9 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.1.3"
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwindcss": "latest",
+    "autoprefixer": "latest",
+    "postcss": "latest"
   },
   "devDependencies": {
     "typescript": "^5",
