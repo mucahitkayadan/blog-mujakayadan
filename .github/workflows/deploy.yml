@@ -22,8 +22,11 @@ jobs:
         
     - name: Build
       run: npm run build
+<<<<<<< HEAD
       env:
         VITE_LAMBDA_URL: ${{ secrets.VITE_LAMBDA_URL }}
+=======
+>>>>>>> 9ec1b104371c41769483828d78c99e89384c8627
         
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -33,7 +36,11 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
         
     - name: Deploy to S3
+<<<<<<< HEAD
       run: aws s3 sync dist/ s3://blog.mujakayadan.com --delete
+=======
+      run: aws s3 sync out/ s3://blog.mujakayadan.com --delete 
+>>>>>>> 9ec1b104371c41769483828d78c99e89384c8627
         
     - name: Invalidate CloudFront
       run: |
