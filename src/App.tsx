@@ -149,7 +149,9 @@ function App() {
                   <div className="grid gap-8 mt-8 mb-8">
                     <BlogCard 
                       post={chatbotPost} 
-                      onClick={() => window.location.href = '/post/chatbot'} 
+                      onClick={() => {
+                        window.location.href = '/post/chatbot';
+                      }} 
                     />
                     {/* Add more blog cards here */}
                   </div>
