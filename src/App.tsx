@@ -1,4 +1,12 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { 
+  BrowserRouter, 
+  Routes, 
+  Route, 
+  Link,
+  createRoutesFromElements,
+  createBrowserRouter,
+  RouterProvider
+} from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { styles } from './styles'
 import { logo, herobg } from './assets'
@@ -69,6 +77,42 @@ const BlogPost = ({ post }: { post: any }) => (
   </div>
 );
 
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index element={
+        <div>
+          <h1 className="category-title">{"<"}Blog{">"}</h1>
+          <div className="grid gap-8 mt-8 mb-8">
+            <BlogCard 
+              post={chatbotPost} 
+              onClick={() => {
+                window.location.href = '/post/chatbot';
+              }} 
+            />
+          </div>
+          <h1 className="category-title bottom">{"</"}Blog{">"}</h1>
+        </div>
+      } />
+      <Route path="post/chatbot" element={
+        <div>
+          <h1 className="category-title">{"<"}Post{">"}</h1>
+          <div className="bg-tertiary/30 rounded-lg p-8 backdrop-blur-sm mt-8 mb-8">
+            <BlogPost post={chatbotPost} />
+          </div>
+          <h1 className="category-title bottom">{"</"}Post{">"}</h1>
+        </div>
+      } />
+    </Route>
+  ),
+  {
+    future: {
+      v7_startTransition: true,
+      v7_relativeSplatPath: true
+    }
+  }
+);
+
 function App() {
   const [active, setActive] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -88,91 +132,64 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <div className='relative z-0 bg-primary'>
-        <div style={{
-          backgroundImage: `url(${herobg})`,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-        }} className="min-h-screen">
-          <nav className={`${styles.paddingX} w-full flex items-center py-5 fixed top-0 z-20 transition-all duration-300 ${scrolled ? "bg-primary shadow-lg" : "bg-transparent"}`}>
-            <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
-              <Link to='/' className='flex items-center gap-2'>
-                <img src={logo} alt='logo' className='w-9 h-9 object-contain' />
-                <motion.p 
-                  className='text-white text-[18px] font-bold cursor-pointer flex items-center'
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+    <div className='relative z-0 bg-primary'>
+      <div style={{
+        backgroundImage: `url(${herobg})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }} className="min-h-screen">
+        <nav className={`${styles.paddingX} w-full flex items-center py-5 fixed top-0 z-20 transition-all duration-300 ${scrolled ? "bg-primary shadow-lg" : "bg-transparent"}`}>
+          <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
+            <Link to='/' className='flex items-center gap-2'>
+              <img src={logo} alt='logo' className='w-9 h-9 object-contain' />
+              <motion.p 
+                className='text-white text-[18px] font-bold cursor-pointer flex items-center'
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <span 
+                  className='block' 
+                  style={{
+                    fontFamily: "'Dancing Script', cursive",
+                    fontSize: "26px",
+                    background: "linear-gradient(90deg, #915EFF, #00BFFF)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
                 >
-                  <span 
-                    className='block' 
-                    style={{
-                      fontFamily: "'Dancing Script', cursive",
-                      fontSize: "26px",
-                      background: "linear-gradient(90deg, #915EFF, #00BFFF)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
+                  {"</"}Muja Kayadan{">"}
+                </span>
+              </motion.p>
+            </Link>
+            <ul className='list-none hidden sm:flex flex-row gap-10'>
+              {[...navLinks, { title: 'Blog', path: 'https://blog.mujakayadan.com' }].map((item) => (
+                <motion.li
+                  key={item.title}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <a 
+                    href={item.path}
+                    className={`${active === item.title ? "text-white" : "text-secondary"} hover:text-white text-[18px] font-medium cursor-pointer transition-colors duration-300`}
+                    onClick={() => setActive(item.title)}
                   >
-                    {"</"}Muja Kayadan{">"}
-                  </span>
-                </motion.p>
-              </Link>
-              <ul className='list-none hidden sm:flex flex-row gap-10'>
-                {[...navLinks, { title: 'Blog', path: 'https://blog.mujakayadan.com' }].map((item) => (
-                  <motion.li
-                    key={item.title}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    <a 
-                      href={item.path}
-                      className={`${active === item.title ? "text-white" : "text-secondary"} hover:text-white text-[18px] font-medium cursor-pointer transition-colors duration-300`}
-                      onClick={() => setActive(item.title)}
-                    >
-                      {item.title}
-                    </a>
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
-          </nav>
-          <main className={`${styles.padding} max-w-7xl mx-auto relative z-0 pt-28`}>
-            <Routes>
-              <Route path="/" element={
-                <div>
-                  <h1 className="category-title">{"<"}Blog{">"}</h1>
-                  <div className="grid gap-8 mt-8 mb-8">
-                    <BlogCard 
-                      post={chatbotPost} 
-                      onClick={() => {
-                        window.location.href = '/post/chatbot';
-                      }} 
-                    />
-                    {/* Add more blog cards here */}
-                  </div>
-                  <h1 className="category-title bottom">{"</"}Blog{">"}</h1>
-                </div>
-              } />
-              <Route path="/post/chatbot" element={
-                <div>
-                  <h1 className="category-title">{"<"}Post{">"}</h1>
-                  <div className="bg-tertiary/30 rounded-lg p-8 backdrop-blur-sm mt-8 mb-8">
-                    <BlogPost post={chatbotPost} />
-                  </div>
-                  <h1 className="category-title bottom">{"</"}Post{">"}</h1>
-                </div>
-              } />
-            </Routes>
-          </main>
-        </div>
-        <SharedChat />
+                    {item.title}
+                  </a>
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </nav>
+        <main className={`${styles.padding} max-w-7xl mx-auto relative z-0 pt-28`}>
+          <RouterProvider router={router} />
+        </main>
       </div>
-    </BrowserRouter>
-  )
+      <SharedChat />
+    </div>
+  );
 }
 
 export default App

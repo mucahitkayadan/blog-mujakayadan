@@ -20,6 +20,7 @@ export const SharedChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(new Audio(notificationSound));
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,7 +32,7 @@ export const SharedChat = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!isOpen) {
+      if (!isOpen && hasInteracted) {
         setShowWelcome(true);
         audioRef.current.play().catch(err => {
           console.log('Audio play failed:', err);
@@ -40,7 +41,16 @@ export const SharedChat = () => {
     }, 10000);
 
     return () => clearTimeout(timer);
-  }, [isOpen]);
+  }, [isOpen, hasInteracted]);
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      setHasInteracted(true);
+    };
+
+    document.addEventListener('click', handleInteraction);
+    return () => document.removeEventListener('click', handleInteraction);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
