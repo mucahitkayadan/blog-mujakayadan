@@ -1,16 +1,28 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { styles } from '../../src/styles'
-import logo from '../../src/assets/logo0.webp'
-import herobg from '../../src/assets/herobg.png'
+import { styles } from './styles'
+import logo from './assets/logo0.webp'
+import herobg from './assets/herobg.png'
 import { useState, useEffect } from 'react'
 import { chatbotPost } from './posts/chatbot'
 import ReactMarkdown from 'react-markdown'
-import { navLinks } from '../../src/constants'
+import { navLinks } from './constants'
 import { SharedChat } from './components/SharedChat'
 
+interface BlogPost {
+  title: string;
+  date: string;
+  summary: string;
+  content: string;
+}
+
+interface BlogCardProps {
+  post: BlogPost;
+  onClick: () => void;
+}
+
 // Blog post card component
-const BlogCard = ({ post, onClick }) => (
+const BlogCard = ({ post, onClick }: BlogCardProps) => (
   <motion.article
     className="bg-tertiary/30 rounded-lg p-8 backdrop-blur-sm hover:bg-tertiary/40 transition-all cursor-pointer"
     whileHover={{ scale: 1.02 }}
@@ -26,24 +38,30 @@ const BlogCard = ({ post, onClick }) => (
 );
 
 // Full blog post component
-const BlogPost = ({ post }) => (
+const BlogPost = ({ post }: { post: any }) => (
   <div className="prose prose-invert max-w-none">
     <h1 className="text-3xl font-bold mb-6 text-white">{post.title}</h1>
     <div className="text-secondary mb-8">{post.date}</div>
     <div className="markdown-content space-y-6">
       <ReactMarkdown 
         components={{
-          h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-8 mb-4 text-white" {...props} />,
-          h2: ({node, ...props}) => <h2 className="text-xl font-bold mt-6 mb-3 text-[#915EFF]" {...props} />,
-          p: ({node, ...props}) => <p className="text-gray-300 leading-relaxed mb-4" {...props} />,
-          code: ({node, inline, ...props}) => 
-            inline ? 
-              <code className="bg-tertiary/50 rounded px-1 py-0.5 text-sm" {...props} /> :
+          h1: ({...props}) => <h1 className="text-2xl font-bold mt-8 mb-4 text-white" {...props} />,
+          h2: ({...props}) => <h2 className="text-xl font-bold mt-6 mb-3 text-[#915EFF]" {...props} />,
+          p: ({...props}) => <p className="text-gray-300 leading-relaxed mb-4" {...props} />,
+          code: ({className, children, ...props}: any) => 
+            className?.includes('language-') ? (
               <pre className="bg-tertiary/50 rounded-lg p-4 overflow-x-auto">
-                <code className="text-sm" {...props} />
-              </pre>,
-          ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-2 text-gray-300" {...props} />,
-          li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
+                <code className="text-sm" {...props}>
+                  {children}
+                </code>
+              </pre>
+            ) : (
+              <code className="bg-tertiary/50 rounded px-1 py-0.5 text-sm" {...props}>
+                {children}
+              </code>
+            ),
+          ul: ({...props}) => <ul className="list-disc list-inside space-y-2 text-gray-300" {...props} />,
+          li: ({...props}) => <li className="text-gray-300" {...props} />,
         }}
       >
         {post.content}
