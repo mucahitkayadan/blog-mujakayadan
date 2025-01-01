@@ -21,6 +21,7 @@ export const SharedChat = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(new Audio(notificationSound));
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [threadId, setThreadId] = useState<string | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,37 +55,51 @@ export const SharedChat = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputMessage.trim()) return;
-
-    setMessages(prev => [...prev, { role: 'user', content: inputMessage }]);
-    setIsLoading(true);
+    if (!inputMessage.trim() || isLoading) return;
 
     try {
-      const LAMBDA_URL = import.meta.env.VITE_LAMBDA_URL;
-      const response = await fetch(LAMBDA_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: inputMessage }),
-      });
+        setIsLoading(true);
+        const response = await fetch(import.meta.env.VITE_LAMBDA_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                message: inputMessage,
+                threadId: threadId // Send the thread ID if it exists
+            }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-      const data = await response.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+        const data = await response.json();
+        setThreadId(data.threadId); // Save the thread ID
+        
+        // Update messages with history if available
+        if (data.history && !threadId) {
+            setMessages([
+                ...data.history.map((msg: any) => ([
+                    { role: 'user', content: msg.userMessage },
+                    { role: 'assistant', content: msg.assistantResponse }
+                ])).flat(),
+                { role: 'user', content: inputMessage },
+                { role: 'assistant', content: data.response }
+            ]);
+        } else {
+            setMessages(prev => [...prev, 
+                { role: 'user', content: inputMessage },
+                { role: 'assistant', content: data.response }
+            ]);
+        }
+        
+        setInputMessage('');
     } catch (error) {
-      console.error('Error:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again later.`
-      }]);
+        console.error('Error:', error);
+    } finally {
+        setIsLoading(false);
     }
-
-    setInputMessage('');
-    setIsLoading(false);
   };
 
   const toggleChat = () => {
