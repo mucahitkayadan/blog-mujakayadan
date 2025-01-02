@@ -3,6 +3,7 @@ import {
   Routes, 
   Route, 
   Link,
+  Navigate,
 } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { styles } from './styles'
@@ -169,6 +170,20 @@ function App() {
                   <h1 className="category-title bottom">{"</"}Blog{">"}</h1>
                 </div>
               } />
+              <Route path="/post" element={
+                <div>
+                  <h1 className="category-title">{"<"}All Posts{">"}</h1>
+                  <div className="grid gap-8 mt-8 mb-8">
+                    <BlogCard 
+                      post={chatbotPost} 
+                      onClick={() => {
+                        window.location.href = '/post/chatbot';
+                      }} 
+                    />
+                  </div>
+                  <h1 className="category-title bottom">{"</"}All Posts{">"}</h1>
+                </div>
+              } />
               <Route path="/post/chatbot" element={
                 <div>
                   <h1 className="category-title">{"<"}Post{">"}</h1>
@@ -178,6 +193,7 @@ function App() {
                   <h1 className="category-title bottom">{"</"}Post{">"}</h1>
                 </div>
               } />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
         </div>
