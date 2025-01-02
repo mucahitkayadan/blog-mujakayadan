@@ -100,7 +100,15 @@ function App() {
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
-        }} className="min-h-screen">
+          backgroundAttachment: 'fixed',
+          minHeight: '100vh',
+          width: '100%',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          zIndex: -1
+        }} />
+        <div className="relative">
           <nav className={`${styles.paddingX} w-full flex items-center py-5 fixed top-0 z-20 transition-all duration-300 ${scrolled ? "bg-primary shadow-lg" : "bg-transparent"}`}>
             <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
               <Link to='/' className='flex items-center gap-2'>
