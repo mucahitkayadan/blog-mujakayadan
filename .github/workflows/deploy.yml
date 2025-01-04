@@ -24,7 +24,7 @@ jobs:
       run: npm run build
 
       env:
-        VITE_LAMBDA_URL: ${{ secrets.VITE_LAMBDA_URL }}
+        VITE_API_GATEWAY_URL: ${{ secrets.VITE_API_GATEWAY_URL }}
         
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -42,6 +42,3 @@ jobs:
       run: |
         aws cloudfront create-invalidation --distribution-id ${{ secrets.BLOG_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
         
-    - name: Create Production Environment File
-      run: |
-        echo "VITE_API_GATEWAY_URL=${{ secrets.VITE_API_GATEWAY_URL }}" >> .env.production
