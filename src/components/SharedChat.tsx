@@ -10,6 +10,9 @@ interface Message {
   content: string;
 }
 
+// Add API config
+const API_URL = import.meta.env.VITE_API_GATEWAY_URL;
+
 export const SharedChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
@@ -57,16 +60,20 @@ export const SharedChat = () => {
     e.preventDefault();
     if (!inputMessage.trim() || isLoading) return;
 
+    const userMessage = inputMessage.trim();
+    setInputMessage(''); // Clear input immediately after submit
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    
     try {
         setIsLoading(true);
-        const response = await fetch(import.meta.env.VITE_LAMBDA_URL, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ 
-                message: inputMessage,
-                threadId: threadId // Send the thread ID if it exists
+                message: userMessage,
+                threadId: threadId 
             }),
         });
 
@@ -75,26 +82,14 @@ export const SharedChat = () => {
         }
 
         const data = await response.json();
-        setThreadId(data.threadId); // Save the thread ID
+        const parsedBody = JSON.parse(data.body);
         
-        // Update messages with history if available
-        if (data.history && !threadId) {
-            setMessages([
-                ...data.history.map((msg: any) => ([
-                    { role: 'user', content: msg.userMessage },
-                    { role: 'assistant', content: msg.assistantResponse }
-                ])).flat(),
-                { role: 'user', content: inputMessage },
-                { role: 'assistant', content: data.response }
-            ]);
-        } else {
-            setMessages(prev => [...prev, 
-                { role: 'user', content: inputMessage },
-                { role: 'assistant', content: data.response }
-            ]);
-        }
-        
-        setInputMessage('');
+        setMessages(prev => [...prev, { 
+            role: 'assistant', 
+            content: parsedBody.response 
+        }]);
+        setThreadId(parsedBody.threadId);
+
     } catch (error) {
         console.error('Error:', error);
     } finally {
